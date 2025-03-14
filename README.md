@@ -9,7 +9,6 @@ A web-based Employee Leave Management System designed to streamline the process 
 - Leave application and approval system
 - Department-wise employee management
 - Attendance tracking with morning and afternoon time-in/out
-- Calendar integration for leave and holiday tracking
 - Payroll feature with a Payslip Generator (planned)
 - Responsive UI for desktop and mobile
 
