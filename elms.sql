@@ -227,9 +227,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`user_id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `role`, `gender`, `phone`, `address`, `birthdate`, `employment_start_date`, `department_id`, `created_at`, `profile_picture`, `employee_type`, `salary`, `leave_balance`, `reset_token`, `token_expiry`, `employment_end_date`) VALUES
 (1, 'Admin', '', 'User', 'admin@gmail.com', '$2y$10$4gkMOXDytIkBqM9pSt6FL.cCxn5KxFT3UpFiJ8Wfguto8DOmdvKca', 'Admin', 'Male', '09561595988', 'Brgy. Daga Cadiz City', '2003-05-31', '2025-02-21', 2, '2025-02-24 12:17:39', '1741746435_elms.jpg', 'Full-time', 0.00, 0, '8b5ff27dc492794e6c33d2ae4f6481a34e2439c2e906c0b34acd22af669aac9a', '2025-03-12 09:38:10', '0000-00-00'),
-(10, 'Jude', 'Garcia', 'Recana', 'juderecania123@gmail.com', '$2y$10$drDpBCNjtSXPDuzkr.j4FehNFwfoC6EGkfdMSgP730VRm2segVavm', 'Employee', 'Male', '09561595988', 'Prk. Malipayun Brgy. Daga Cadiz City Negros Occidental', '2003-05-31', '2025-02-11', 2, '2025-02-27 22:29:30', '1741665249_1740695126_cedar2.png', 'Full-time', 2000.00, 20, '694737ec0eac693c659879b49303ccde2e1fc43a5f2de8bab680d12545034fe4', '2025-03-12 09:39:26', '2025-03-11'),
-(11, 'Romelito', 'Compania', 'Bedoria', 'rom@gmail.com', '$2y$10$1fq7c9YM/ONKhQwXyMoehOjkbEMMZ.FXMJHzca4Rky1i0.VUiP0Fy', 'Employee', 'Male', '', 'qwqw', '2002-02-02', '2025-02-23', 4, '2025-02-28 01:02:56', '1740704576_romelito.jpg', 'Full-time', 50000.00, 20, NULL, NULL, '0000-00-00');
-
+(10, 'Employee', '', 'User', 'employee@gmail.com', '$2y$10$drDpBCNjtSXPDuzkr.j4FehNFwfoC6EGkfdMSgP730VRm2segVavm', 'Employee', 'Male', '09561595988', 'Prk. Malipayun Brgy. Daga Cadiz City Negros Occidental', '2003-05-31', '2025-02-11', 2, '2025-02-27 22:29:30', '1741665249_1740695126_cedar2.png', 'Full-time', 2000.00, 20, '694737ec0eac693c659879b49303ccde2e1fc43a5f2de8bab680d12545034fe4', '2025-03-12 09:39:26', '2025-03-11');
 --
 -- Triggers `users`
 --
@@ -242,179 +240,58 @@ $$
 DELIMITER ;
 
 --
--- Indexes for dumped tables
---
-
-
-
-
---
--- Indexes for table `attendance`
---
-ALTER TABLE `attendance`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `unique_user_date` (`user_id`,`date`),
-  ADD UNIQUE KEY `unique_attendance` (`user_id`,`date`);
-
---
--- Indexes for table `deductions`
---
-ALTER TABLE `deductions`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `deduction_name` (`deduction_name`);
-
---
--- Indexes for table `departments`
---
-ALTER TABLE `departments`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `department_name` (`department_name`);
-
---
--- Indexes for table `earnings`
---
-ALTER TABLE `earnings`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `earning_name` (`earning_name`);
-
---
--- Indexes for table `leave_request`
---
-ALTER TABLE `leave_request`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `payroll`
---
-ALTER TABLE `payroll`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`);
-
---
--- Indexes for table `payroll_deductions`
---
-ALTER TABLE `payroll_deductions`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `deduction_id` (`deduction_id`);
-
---
--- Indexes for table `payroll_earnings`
---
-ALTER TABLE `payroll_earnings`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `user_id` (`user_id`),
-  ADD KEY `earning_id` (`earning_id`);
-
---
--- Indexes for table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD KEY `department_id` (`department_id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `deductions`
 --
 ALTER TABLE `deductions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `earnings`
 --
 ALTER TABLE `earnings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `leave_request`
 --
 ALTER TABLE `leave_request`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `payroll`
 --
 ALTER TABLE `payroll`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `payroll_deductions`
 --
 ALTER TABLE `payroll_deductions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `payroll_earnings`
 --
 ALTER TABLE `payroll_earnings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
-
---
--- Constraints for dumped tables
---
-
---
--- Constraints for table `attendance`
---
-ALTER TABLE `attendance`
-  ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
-
---
--- Constraints for table `leave_request`
---
-ALTER TABLE `leave_request`
-  ADD CONSTRAINT `leave_request_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
-
---
--- Constraints for table `payroll`
---
-ALTER TABLE `payroll`
-  ADD CONSTRAINT `payroll_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
-
---
--- Constraints for table `payroll_deductions`
---
-ALTER TABLE `payroll_deductions`
-  ADD CONSTRAINT `payroll_deductions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `payroll_deductions_ibfk_2` FOREIGN KEY (`deduction_id`) REFERENCES `deductions` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `payroll_earnings`
---
-ALTER TABLE `payroll_earnings`
-  ADD CONSTRAINT `payroll_earnings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `payroll_earnings_ibfk_2` FOREIGN KEY (`earning_id`) REFERENCES `earnings` (`id`) ON DELETE CASCADE;
-
---
--- Constraints for table `users`
---
-ALTER TABLE `users`
-  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL;
-COMMIT;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
