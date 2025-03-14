@@ -10,7 +10,7 @@ A web-based Employee Leave Management System designed to streamline the process 
 - Department-wise employee management
 - Attendance tracking with morning and afternoon time-in/out
 - Payroll feature with a Payslip Generator (planned)
-- Responsive UI for desktop and mobile
+- Responsive UI for desktop
 
 ## Built With
 - **Frontend:** HTML, CSS, JavaScript
@@ -18,8 +18,6 @@ A web-based Employee Leave Management System designed to streamline the process 
 - **Database:** MySQL
 - **Other Technologies:** XAMPP (for local development)
 
-## Screenshots
-*(Optional: Add relevant images or GIFs to showcase the project.)*
 
 ## Prerequisites
 Ensure you have the following installed before proceeding:
@@ -29,26 +27,24 @@ Ensure you have the following installed before proceeding:
 ## Installation Instructions
 1. Clone the repository by typing the following in the terminal:
    ```bash
-   git clone https://github.com/yourusername/elms.git
+   git clone https://github.com/juderecania31/elms.git
    ```
 2. Navigate to the project folder:
    ```bash
-   cd elms
+   cd elmsv2
    ```
-3. Import the `leave_management` database from `db.sql` into MySQL.
+3. Import the `elmsv2` database from `elmsv2.sql` into MySQL.
 4. Configure database connection in `db.php`.
 5. Start XAMPP and run the project on `localhost`.
 
 ## Contributors
-- Project Manager: [Your Name]
-- Full Stack Developer: [Your Name]
+- Project Manager: Stephanie Jane M. Cañete
+- Full Stack Developer: Jude G. Recaña
 
-## License
-This project is licensed under the MIT License – see the LICENSE file for details.
 
 ## Contact
 For support or inquiries:
-- **Email:** yourname@gmail.com
-- **Mobile:** 09123456789
-- **GitHub Issues:** [github.com/yourusername/elms/issues](https://github.com/yourusername/elms/issues)
+- **Email:** juderecania123@gmail.com
+- **Mobile:** 09561595988
+- **GitHub Issues:** [github.com/juderecania31/elms/issues](https://github.com/juderecania31/elms/issues)
 
