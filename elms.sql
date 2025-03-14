@@ -245,6 +245,9 @@ DELIMITER ;
 -- Indexes for dumped tables
 --
 
+
+
+
 --
 -- Indexes for table `attendance`
 --
