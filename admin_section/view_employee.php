@@ -1,6 +1,7 @@
 <?php
     session_start();
     include '../db.php';
+    $page_title = "View Employee";
     include '../includes/navbar.php';
     include '../includes/fade_in.php';
 

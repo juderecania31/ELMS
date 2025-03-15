@@ -221,6 +221,11 @@
                     id="profileImage">
             </label>
             <input type="file" name="profile_picture" id="profilePictureInput" style="display: none;" accept="image/*" onchange="this.form.submit()">
+            <div class="form-group">
+                <button type="button" class="reset-btn" data-bs-toggle="modal" data-bs-target="#resetPasswordModal">
+                    Reset Password
+                </button>
+            </div>
         </div>
     </form>
 
@@ -329,56 +334,64 @@
     </div>    
 </div>
 
-<!-- Bootstrap Modal for Save Confirmation -->
-<div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="confirmSaveModalLabel">Confirm Changes</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                Are you sure you want to save these changes?
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-success" id="confirmSaveBtn">Yes, Save</button>
+    <!-- Bootstrap Modal for Save Confirmation -->
+    <div class="modal fade" id="confirmSaveModal" tabindex="-1" aria-labelledby="confirmSaveModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmSaveModalLabel">Confirm Changes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to save these changes?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success" id="confirmSaveBtn">Yes, Save</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Bootstrap Modal for Reset Password -->
-<div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="resetPasswordModalLabel">Reset Password</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="resetPasswordForm" method="POST" action="../functions/reset_password.php">
-                    <input type="hidden" name="email" value="<?= htmlspecialchars($employee['email'] ?? '') ?>">
-                    <div class="form-group">
-                        <label for="newPassword" class="form-label">New Password:</label>
-                        <input type="password" class="form-control" id="newPassword" name="new_password" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="confirmPassword" class="form-label">Confirm Password:</label>
-                        <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="submit" class="btn btn-danger">Reset Password</button>
-                    </div>
-                </form>
+    <!-- Bootstrap Modal for Reset Password -->
+    <div class="modal fade" id="resetPasswordModal" tabindex="-1" aria-labelledby="resetPasswordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resetPasswordModalLabel">Reset Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="resetPasswordForm" method="POST" action="../functions/reset_password.php">
+                        <input type="hidden" name="email" value="<?= htmlspecialchars($employee['email'] ?? '') ?>">
+                        <div class="form-group">
+                            <label for="newPassword" class="form-label">New Password:</label>
+                            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmPassword" class="form-label">Confirm Password:</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-danger">Reset Password</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Reset passowrd modal focus
+    document.addEventListener("DOMContentLoaded", function() {
+        var resetPasswordModal = document.getElementById("resetPasswordModal");
+        resetPasswordModal.addEventListener("shown.bs.modal", function () {
+            document.getElementById("newPassword").focus();
+        });
+    });
+
     document.addEventListener("DOMContentLoaded", function () {
         const menuIcon = document.getElementById("menuIcon");
         const sidebar = document.querySelector(".sidebar");

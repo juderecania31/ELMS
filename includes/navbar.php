@@ -176,8 +176,8 @@
                 <li><a href="../admin/manage_employees.php"><i class="fas fa-users"></i> Manage Staff</a></li>
                 <li><a href="../admin/manage_leave.php"><i class="fas fa-calendar-check"></i> Manage Leave</a></li>
                 <li><a href="../admin/manage_payroll.php"><i class="fas fa-file-invoice-dollar"></i> Manage Payroll</a></li>
-                <!-- <li><a href="../admin/manage_attendance.php"><i class="fas fa-user-clock"></i> Attendance</a></li>
-                <li><a href="../admin/settings.php"><i class="fas fa-cogs"></i> Settings</a></li> -->
+                <li><a href="../admin/manage_attendance.php"><i class="fas fa-user-clock"></i> Attendance</a></li>
+                <!-- <li><a href="../admin/settings.php"><i class="fas fa-cogs"></i> Settings</a></li> -->
 
             <?php elseif ($role == 'Employee'): ?>
                 <li><a href="../employee/apply_leave.php"><i class="fas fa-file-alt"></i> Apply Leave</a></li>

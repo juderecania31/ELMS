@@ -8,40 +8,8 @@
 
     require_once '../db.php';
     $page_title = "Manage Attendance";
-    // include '../includes/navbar.php';
+    include '../includes/navbar.php';
     include '../includes/fade_in.php';
-
-    $start_date = $_GET['start_date'] ?? null;
-    $end_date = $_GET['end_date'] ?? null;
-    $whereClause = '';
-
-    if ($start_date && $end_date) {
-        $whereClause = " WHERE DATE(a.time_in) BETWEEN :start_date AND :end_date";
-    }
-
-    $query = "SELECT 
-        u.first_name, 
-        u.last_name, 
-        d.department_name, 
-        DATE(a.time_in) AS attendance_date, 
-        a.time_in, 
-        a.time_out,
-        TIMEDIFF(a.time_out, a.time_in) AS total_hours
-    FROM attendance a
-    LEFT JOIN users u ON a.user_id = u.user_id
-    LEFT JOIN departments d ON u.department_id = d.id
-    $whereClause
-    ORDER BY a.time_in DESC;";
-
-    $stmt = $pdo->prepare($query);
-
-    if ($start_date && $end_date) {
-        $stmt->bindParam(':start_date', $start_date);
-        $stmt->bindParam(':end_date', $end_date);
-    }
-
-    $stmt->execute();
-    $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <!DOCTYPE html>
@@ -52,6 +20,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.2.2/css/dataTables.dataTables.css" />
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <title>Document</title>
     <style>
         body {
@@ -101,16 +70,49 @@
     <div class="content" id="content">
         <h2>Employee Attendance Records</h2>
 
-        <form method="GET" action="" style="margin-bottom: 20px;">
-            <label for="start_date">Start Date:</label>
-            <input type="date" id="start_date" name="start_date" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>">
-            
-            <label for="end_date">End Date:</label>
-            <input type="date" id="end_date" name="end_date" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>">
+            <!-- Summary Cards -->
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Present Today</h5>
+                    <h2>25</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Late Today</h5>
+                    <h2>3</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-danger mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Absent Today</h5>
+                    <h2>5</h2>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <button type="submit">Filter</button>
-            <a href="manage_attendance.php"><button type="button">Reset</button></a>
-        </form>
+    <form method="GET" action="" class="row g-3 mb-3">
+        <div class="col-md-4">
+            <label for="start_date" class="form-label">Start Date:</label>
+            <input type="date" id="start_date" name="start_date" class="form-control w-50" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>">
+        </div>
+        <div class="col-md-4">
+            <label for="end_date" class="form-label">End Date:</label>
+            <input type="date" id="end_date" name="end_date" class="form-control w-50" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>">
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">Filter</button>
+            <a href="manage_attendance.php" class="btn btn-secondary">Reset</a>
+        </div>
+    </form>
+
 
 
         <table id="attendance_table" class="display" style="width:100%">
@@ -125,24 +127,12 @@
                 </tr>
             </thead>
             <tbody>
-                <?php if (count($records) > 0): ?>
-                    <?php foreach ($records as $row): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
-                            <td><?= htmlspecialchars($row['department_name']) ?></td>
-                            <td><?= htmlspecialchars($row['attendance_date']) ?></td>
-                            <td><?= date("h:i A", strtotime($row['time_in'])) ?></td>
-                            <td><?= $row['time_out'] ? date("h:i A", strtotime($row['time_out'])) : '<span style="color: red;">Not clocked out</span>' ?></td>
-                            <td><?= $row['total_hours'] ?? '-' ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                <?php endif; ?>
             </tbody>
         </table>
 
     </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     $(document).ready(function () {
         $('#attendance_table').DataTable();

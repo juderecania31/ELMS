@@ -264,12 +264,8 @@
                                     <i class="fas fa-edit"></i>
                                 </button>
                                 <button class="btn btn-sm btn-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Print Payslip"
-                                    onclick="window.location.href='print_payslip.php?id=<?= $row['user_id']; ?>'">
+                                    onclick="window.open('../admin_section/print_payslip.php?id=<?= $row['user_id']; ?>', '_blank')">
                                     <i class="fas fa-print"></i>
-                                </button>
-                                <button class="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Delete Payroll"
-                                    onclick="confirmDelete(<?= $row['user_id']; ?>)">
-                                    <i class="fas fa-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -387,73 +383,73 @@
         </div>
     </div>
 
-<!-- Edit Payroll Modal -->
-<div class="modal fade modal-custom-width" id="editPayrollModal" tabindex="-1" aria-labelledby="editPayrollModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Edit Payroll</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="editPayrollForm">
-                    <input type="hidden" id="editUserId">
+    <!-- Edit Payroll Modal -->
+    <div class="modal fade modal-custom-width" id="editPayrollModal" tabindex="-1" aria-labelledby="editPayrollModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Payroll</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editPayrollForm">
+                        <input type="hidden" id="editUserId">
 
-                    <div class="mb-3 d-flex align-items-center">
-                        <label for="editEmployeeName" class="form-label me-3 fw-bold" style="width: 200px;">Employee Name:</label>
-                        <input type="text" class="form-control input-short" id="editEmployeeName" readonly>
-                    </div>
-
-                    <div class="mb-3 d-flex align-items-center">
-                        <label for="editSalary" class="form-label me-3 fw-bold" style="width: 200px;">Salary:</label>
-                        <input type="number" class="form-control input-short" id="editSalary">
-                    </div>
-
-                    <!-- Earnings Dropdown -->
-                    <div class="mb-3 d-flex align-items-center">
-                        <label class="form-label fw-bold" style="width: 215px;">Add Earnings:</label>
-                        <div class="custom-input-dropdown" style="width: 200px;">
-                            <input type="text" class="form-control input-short" id="earningsInput" placeholder="Select options..." readonly>
-                            <div class="dropdown-content" id="earningsCheckboxes"></div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <label for="editEmployeeName" class="form-label me-3 fw-bold" style="width: 200px;">Employee Name:</label>
+                            <input type="text" class="form-control input-short" id="editEmployeeName" readonly>
                         </div>
-                    </div>
 
-                    <!-- Deductions Dropdown -->
-                    <div class="mb-3 d-flex align-items-center">
-                        <label class="form-label fw-bold" style="width: 215px;">Add Deductions:</label>
-                        <div class="custom-input-dropdown" style="width: 200px;">
-                            <input type="text" class="form-control input-short" id="deductionsInput" placeholder="Select options..." readonly>
-                            <div class="dropdown-content" id="deductionsCheckboxes"></div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <label for="editSalary" class="form-label me-3 fw-bold" style="width: 200px;">Salary:</label>
+                            <input type="number" class="form-control input-short" id="editSalary">
                         </div>
-                    </div>
 
-                    <div class="mb-3 d-flex align-items-center">
-                        <label for="editStatus" class="form-label me-3 fw-bold" style="width: 200px;">Status:</label>
-                        <select class="form-control input-short" id="editStatus" required>
-                            <option value="pending">Pending</option>
-                            <option value="paid">Paid</option>
-                        </select>
-                    </div>
+                        <!-- Earnings Dropdown -->
+                        <div class="mb-3 d-flex align-items-center">
+                            <label class="form-label fw-bold" style="width: 215px;">Add Earnings:</label>
+                            <div class="custom-input-dropdown" style="width: 200px;">
+                                <input type="text" class="form-control input-short" id="earningsInput" placeholder="Select options..." readonly>
+                                <div class="dropdown-content" id="earningsCheckboxes"></div>
+                            </div>
+                        </div>
 
-                    <div class="mb-3 d-flex align-items-center">
-                        <label for="editPayPeriod" class="form-label me-3 fw-bold" style="width: 200px;">Pay Date:</label>
-                        <input type="date" class="form-control input-short" id="editPayPeriod" required>
-                    </div>
+                        <!-- Deductions Dropdown -->
+                        <div class="mb-3 d-flex align-items-center">
+                            <label class="form-label fw-bold" style="width: 215px;">Add Deductions:</label>
+                            <div class="custom-input-dropdown" style="width: 200px;">
+                                <input type="text" class="form-control input-short" id="deductionsInput" placeholder="Select options..." readonly>
+                                <div class="dropdown-content" id="deductionsCheckboxes"></div>
+                            </div>
+                        </div>
 
-                    <div class="mb-3 d-flex justify-content-center align-items-center">
-                        <label for="editNetPay" class="form-label fw-bold mb-0 me-2" style="width: 100px; text-align: right;">Net Pay:</label>
-                        <input type="text" class="form-control text-center border-0 fw-bold" id="editNetPay" readonly style="width: 150px;">
-                    </div>
+                        <div class="mb-3 d-flex align-items-center">
+                            <label for="editStatus" class="form-label me-3 fw-bold" style="width: 200px;">Status:</label>
+                            <select class="form-control input-short" id="editStatus" required>
+                                <option value="pending">Pending</option>
+                                <option value="paid">Paid</option>
+                            </select>
+                        </div>
 
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary" onclick="savePayrollChanges()">Save Changes</button>
+                        <div class="mb-3 d-flex align-items-center">
+                            <label for="editPayPeriod" class="form-label me-3 fw-bold" style="width: 200px;">Pay Date:</label>
+                            <input type="date" class="form-control input-short" id="editPayPeriod" required>
+                        </div>
+
+                        <div class="mb-3 d-flex justify-content-center align-items-center">
+                            <label for="editNetPay" class="form-label fw-bold mb-0 me-2" style="width: 100px; text-align: right;">Net Pay:</label>
+                            <input type="text" class="form-control text-center border-0 fw-bold" id="editNetPay" readonly style="width: 150px;">
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="savePayrollChanges()">Save Changes</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
     <!-- Bootstrap Modal for Earnings -->
@@ -826,7 +822,7 @@
 
 </script>
 
-    <script>
+<script>
         document.addEventListener("DOMContentLoaded", function () {
             // Retrieve the last active tab from localStorage
             let activeTab = localStorage.getItem("activeTab") || "payroll";
@@ -989,7 +985,7 @@
             })
             .catch(error => console.error("Error:", error));
         }
-    </script>
+</script>
 
 </body>
 </html>
