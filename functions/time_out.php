@@ -11,7 +11,6 @@ date_default_timezone_set('Asia/Manila');
 $user_id = $_SESSION['user_id'];
 $current_time = date("h:i:s A"); // 12-hour format
 $current_date = date("Y-m-d");
-$is_morning = date("H") < 12; // Check if it's morning (before 12 PM)
 
 try {
     // Fetch today's attendance record
@@ -20,16 +19,19 @@ try {
     $attendance = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($attendance) {
-        // Update the appropriate time-out column
-        if ($is_morning && !empty($attendance['morning_time_in']) && empty($attendance['morning_time_out'])) {
+        // Allow morning time-out anytime
+        if (!empty($attendance['morning_time_in']) && empty($attendance['morning_time_out'])) {
             $update_stmt = $pdo->prepare("UPDATE attendance SET morning_time_out = ? WHERE id = ?");
             $update_stmt->execute([$current_time, $attendance['id']]);
             echo json_encode(["success" => true, "message" => "Morning Time-Out recorded successfully."]);
-        } elseif (!$is_morning && !empty($attendance['afternoon_time_in']) && empty($attendance['afternoon_time_out'])) {
+        }
+        // Allow afternoon time-out anytime
+        elseif (!empty($attendance['afternoon_time_in']) && empty($attendance['afternoon_time_out'])) {
             $update_stmt = $pdo->prepare("UPDATE attendance SET afternoon_time_out = ? WHERE id = ?");
             $update_stmt->execute([$current_time, $attendance['id']]);
             echo json_encode(["success" => true, "message" => "Afternoon Time-Out recorded successfully."]);
-        } else {
+        }
+        else {
             echo json_encode(["success" => false, "message" => "You must time in before timing out, or you have already timed out."]);
         }
     } else {

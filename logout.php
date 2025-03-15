@@ -8,6 +8,6 @@ $_SESSION = array();
 session_destroy();
 
 // Redirect to login page
-header("Location: /elms/index.php");
+header("Location: /elmsv2/index.php");
 exit;
 ?>
