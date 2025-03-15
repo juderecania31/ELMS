@@ -140,12 +140,12 @@
             color: white;
             text-align: center;
         }
-        th:nth-child(1) { width: 17%; } /* Employee Name */
-        th:nth-child(2) { width: 17%; } /* Department */
-        th:nth-child(3) { width: 17%; } /* Time In */
-        th:nth-child(4) { width: 17%; } /* Time Out */
-        th:nth-child(5) { width: 17%; } /* Total Hours */
-        th:nth-child(6) { width: 25%; } /* Total Hours */
+        th:nth-child(1) { width: 25%; } /* Employee Name */
+        th:nth-child(2) { width: 15%; } /* Department */
+        th:nth-child(3) { width: 15%; } /* Time In */
+        th:nth-child(4) { width: 15%; } /* Time Out */
+        th:nth-child(5) { width: 15%; } /* Total Hours */
+        th:nth-child(6) { width: 15%; } /* Total Hours */
 
 
         tbody tr:nth-child(even) {

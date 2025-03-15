@@ -175,6 +175,23 @@
             pointer-events: none !important; /* Prevents editing */
         }
 
+        .status-approved {
+            background-color: #28a745; /* Green */
+            color: white;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 3px;
+            display: inline-block;
+        }
+
+        .status-pending {
+            background-color: #ffc107; /* Yellow */
+            color: black;
+            font-weight: bold;
+            padding: 3px 8px;
+            border-radius: 3px;
+            display: inline-block;
+        }
 
 
         /* Custom Scrollbar Style */
@@ -219,7 +236,7 @@
                                                             COALESCE(p.salary, u.salary, 0.00) AS salary, 
                                                             COALESCE(p.net_pay, u.salary - (COALESCE(p.deductions, 0)), 0.00) AS net_pay, 
                                                             COALESCE(p.status, 'pending') AS status, 
-                                                            COALESCE(p.pay_date, 'N/A') AS pay_date
+                                                            DATE_FORMAT(COALESCE(p.pay_date, NOW()), '%M %e, %Y') AS pay_date
                                                         FROM users u
                                                         LEFT JOIN departments d ON u.department_id = d.id
                                                         LEFT JOIN payroll p ON u.user_id = p.user_id 
@@ -235,8 +252,10 @@
                             <td><?= htmlspecialchars($row['department_name']); ?></td>
                             <td class="salary"><?= number_format($row['salary'], 2); ?></td>
                             <td class="net-pay"><?= number_format($row['net_pay'], 2); ?></td>
-                            <td class="<?= ($row['status'] == 'paid') ? 'status-approved' : 'status-pending'; ?>">
-                                <?= htmlspecialchars(ucfirst($row['status'])); ?>
+                            <td>
+                                <span class="<?= ($row['status'] == 'paid') ? 'status-approved' : 'status-pending'; ?>">
+                                    <?= htmlspecialchars(ucfirst($row['status'])); ?>
+                                </span>
                             </td>
                             <td><?= htmlspecialchars($row['pay_date']); ?></td>
                             <td>
@@ -614,7 +633,7 @@
         calculateNetPay(); // Recalculate Net Pay when restoring
     }
 
-    // Open modal and populate fields
+    // Call this function when opening the modal
     function openEditModal(userId) {
         if (!userId) return;
 
@@ -627,14 +646,13 @@
                     document.getElementById("editSalary").value = data.salary;
                     document.getElementById("editStatus").value = data.status;
                     document.getElementById("editPayPeriod").value = data.pay_date;
-
-                    document.getElementById("editNetPay").value = data.net_pay;
+                    document.getElementById("editNetPay").value = `₱ ${parseFloat(data.net_pay).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
                     populateCheckboxes(data.earnings, "earningsCheckboxes", "earningsInput", data.selected_earnings, "earning");
                     populateCheckboxes(data.deductions, "deductionsCheckboxes", "deductionsInput", data.selected_deductions, "deduction");
 
-                    // Restore checked items when opening modal
-                    restoreCheckedItems();
+                    // Enable auto calculation when modal is opened
+                    enableAutoCalculation();
 
                     new bootstrap.Modal(document.getElementById("editPayrollModal")).show();
                 } else {
@@ -644,27 +662,43 @@
             .catch(error => console.error("Error fetching payroll details:", error));
     }
 
-    // Save state when modal closes
-    document.getElementById("editPayrollModal").addEventListener("hidden.bs.modal", saveCheckedItems);
 
-
+    // Function to auto-calculate net pay
     function calculateNetPay() {
         let salary = parseFloat(document.getElementById("editSalary").value) || 0;
         let totalEarnings = 0;
         let totalDeductions = 0;
 
+        // Calculate total earnings
         document.querySelectorAll("#earningsCheckboxes input[type='checkbox']:checked").forEach(checkbox => {
             let amountInput = document.getElementById(`amount_${checkbox.id}`);
             totalEarnings += parseFloat(amountInput.value) || 0;
         });
 
+        // Calculate total deductions
         document.querySelectorAll("#deductionsCheckboxes input[type='checkbox']:checked").forEach(checkbox => {
             let amountInput = document.getElementById(`amount_${checkbox.id}`);
             totalDeductions += parseFloat(amountInput.value) || 0;
         });
 
+        // Compute net pay
         let netPay = salary + totalEarnings - totalDeductions;
-        document.getElementById("editNetPay").value = netPay.toFixed(2); // Format to 2 decimal places
+        
+        // Format net pay with peso sign and ensure 2 decimal places
+        document.getElementById("editNetPay").value = `₱ ${netPay.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    // Function to add event listeners for auto-calculation
+    function enableAutoCalculation() {
+        document.getElementById("editSalary").addEventListener("input", calculateNetPay);
+        
+        document.querySelectorAll("#earningsCheckboxes input[type='checkbox'], #earningsCheckboxes input[type='number']").forEach(input => {
+            input.addEventListener("input", calculateNetPay);
+        });
+
+        document.querySelectorAll("#deductionsCheckboxes input[type='checkbox'], #deductionsCheckboxes input[type='number']").forEach(input => {
+            input.addEventListener("input", calculateNetPay);
+        });
     }
 
     function populateCheckboxes(data, containerId, inputId, selectedItems, type) {
@@ -673,61 +707,59 @@
         container.innerHTML = "";
 
         data.forEach(item => {
-            let isChecked = selectedItems.includes(item.id) ? "checked" : "";
-            let existingAmountInput = document.getElementById(`amount_${type}_${item.id}`);
-            let amountValue = existingAmountInput ? existingAmountInput.value : item.amount || "";
-
+            // Find the selected item and get its amount
+            let selectedItem = selectedItems.find(sel => sel.earning_id == item.id || sel.deduction_id == item.id);
+            let isChecked = selectedItem ? "checked" : "";
+            let amountValue = selectedItem ? selectedItem.amount : "";
 
             let checkboxHtml = `
                 <div class="form-check d-flex align-items-center mb-2" style="justify-content: space-between; width: 100%;">
                     <input class="form-check-input me-2" type="checkbox" value="${item.id}" id="${type}_${item.id}" ${isChecked} onclick="toggleAmountField('${type}_${item.id}', '${containerId}', '${inputId}')">
-                    <label class="form-check-label me-2" style="width: 150px;" for="${type}_${item.id}">${item.name}</label>
-                    <span id="amountLabel_${type}_${item.id}" class="me-2 d-none">Amount:</span>
-                    <input type="number" class="form-control input-amount d-none" id="amount_${type}_${item.id}" name="${type}_amounts[${item.id}]" value="${amountValue}" style="width: 100px;">
+                    <label class="form-check-label me-2" style="width: 150px; left: 20px;" for="${type}_${item.id}">${item.name}</label>
+                    <span id="amountLabel_${type}_${item.id}" class="me-2 ${isChecked ? '' : 'd-none'}">Amount:</span>
+                    <input type="number" class="form-control input-amount ${isChecked ? '' : 'd-none'}" id="amount_${type}_${item.id}" name="${type}_amounts[${item.id}]" value="${amountValue}" style="width: 100px;">
                 </div>
             `;
-            container.innerHTML += checkboxHtml;
-            if (isChecked) {
-                setTimeout(() => toggleAmountField(`${type}_${item.id}`, containerId, inputId), 0);
-            }
 
+            container.innerHTML += checkboxHtml;
         });
 
         updateSelected(containerId, inputId);
     }
 
-    function toggleAmountField(checkboxId, containerId, inputId) {
+
+    // Show/hide amount field when checkbox is toggled
+    function toggleAmountField(checkboxId) {
         let checkbox = document.getElementById(checkboxId);
         let amountInput = document.getElementById(`amount_${checkboxId}`);
         let amountLabel = document.getElementById(`amountLabel_${checkboxId}`);
 
         if (checkbox.checked) {
-            amountLabel.classList.remove("d-none"); // Show "Amount:"
-            amountInput.classList.remove("d-none"); // Show input field
-            amountInput.addEventListener("input", calculateNetPay); // Recalculate Net Pay when amount changes
+            amountInput.classList.remove("d-none");
+            amountLabel.classList.remove("d-none");
+            amountInput.value = amountInput.value || 0; // Ensure default value
         } else {
-            amountLabel.classList.add("d-none"); // Hide "Amount:"
-            amountInput.classList.add("d-none"); // Hide input field
-            amountInput.value = ""; // Clear value when unchecked
+            amountInput.classList.add("d-none");
+            amountLabel.classList.add("d-none");
+            amountInput.value = 0; // Reset value when unchecked
         }
 
-        updateSelected(containerId, inputId);
-        calculateNetPay(); // Update net pay
+        calculateNetPay(); // Update net pay when toggled
     }
 
-    // Update input field with selected items
-    function updateSelected(containerId, inputId) {
-        let container = document.getElementById(containerId);
-        let inputField = document.getElementById(inputId);
-        let selectedItems = [];
+        // Update input field with selected items
+        function updateSelected(containerId, inputId) {
+            let container = document.getElementById(containerId);
+            let inputField = document.getElementById(inputId);
+            let selectedItems = [];
 
-        container.querySelectorAll("input[type='checkbox']:checked").forEach(checkbox => {
-            let label = checkbox.nextElementSibling.textContent.trim();
-            selectedItems.push(label);
-        });
+            container.querySelectorAll("input[type='checkbox']:checked").forEach(checkbox => {
+                let label = checkbox.nextElementSibling.textContent.trim();
+                selectedItems.push(label);
+            });
 
-        inputField.value = selectedItems.length > 0 ? selectedItems.join(", ") : "Select options...";
-    }
+            inputField.value = selectedItems.length > 0 ? selectedItems.join(", ") : "Select options...";
+        }
 
     // Save Changes to Payroll
     function savePayrollChanges() {

@@ -26,22 +26,32 @@ if (isset($_GET['user_id'])) {
     $deductionsStmt = $pdo->query("SELECT id, deduction_name AS name FROM deductions");
     $deductions = $deductionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch selected earnings
-    $selectedEarningsStmt = $pdo->prepare("SELECT earning_id FROM payroll_earnings WHERE user_id = ?");
+    // Fetch selected earnings with amounts
+    $selectedEarningsStmt = $pdo->prepare("
+        SELECT pe.earning_id, e.earning_name AS name, pe.amount 
+        FROM payroll_earnings pe 
+        JOIN earnings e ON pe.earning_id = e.id 
+        WHERE pe.user_id = ?
+    ");
     $selectedEarningsStmt->execute([$user_id]);
-    $selectedEarnings = $selectedEarningsStmt->fetchAll(PDO::FETCH_COLUMN);
+    $selectedEarnings = $selectedEarningsStmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Fetch selected deductions
-    $selectedDeductionsStmt = $pdo->prepare("SELECT deduction_id FROM payroll_deductions WHERE user_id = ?");
+    // Fetch selected deductions with amounts
+    $selectedDeductionsStmt = $pdo->prepare("
+        SELECT pd.deduction_id, d.deduction_name AS name, pd.amount 
+        FROM payroll_deductions pd 
+        JOIN deductions d ON pd.deduction_id = d.id 
+        WHERE pd.user_id = ?
+    ");
     $selectedDeductionsStmt->execute([$user_id]);
-    $selectedDeductions = $selectedDeductionsStmt->fetchAll(PDO::FETCH_COLUMN);
+    $selectedDeductions = $selectedDeductionsStmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
         'success' => true,
         'user_id' => $payroll['user_id'],
         'employee_name' => $payroll['employee_name'],
         'salary' => $payroll['salary'],
-        'net_pay' => $payroll['net_pay'], // ADD THIS LINE
+        'net_pay' => $payroll['net_pay'], // Ensure net pay is sent
         'status' => $payroll['status'],
         'pay_date' => $payroll['pay_date'],
         'earnings' => $earnings,

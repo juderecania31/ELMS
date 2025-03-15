@@ -405,7 +405,7 @@
 
     // Confirm Save Modal
     document.getElementById("confirmSaveBtn").addEventListener("click", function() {
-        document.querySelector("form").submit();
+        document.querySelector("form[action='']").submit();
     });
 
     // Capitalize first letter of input
