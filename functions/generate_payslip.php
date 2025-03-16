@@ -1,0 +1,219 @@
+<?php
+    require_once '../db.php';
+    require_once '../tcpdf/tcpdf.php'; // Ensure TCPDF is installed and included
+
+    // Check if the user_id is provided in the URL
+    if (!isset($_GET['id']) || empty($_GET['id'])) {
+        die("Invalid Employee ID.");
+    }
+
+    $user_id = $_GET['id'];
+
+    // Fetch employee details
+    $stmt = $pdo->prepare("SELECT first_name, last_name, department_id, gender, salary, email, phone, address, employment_start_date FROM users WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $employee = $stmt->fetch();
+
+    // Check if the employee exists
+    if (!$employee) {
+        die("Employee not found.");
+    }
+
+    $stmt = $pdo->prepare("SELECT first_name, last_name, email FROM users WHERE role = 'Admin' LIMIT 1");
+    $stmt->execute();
+    $admin = $stmt->fetch();
+
+    $stmt = $pdo->prepare("SELECT pay_date FROM payroll WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $payroll = $stmt->fetch();
+
+    // Fetch department details
+    $stmt = $pdo->prepare("SELECT department_name FROM departments WHERE id = ?");
+    $stmt->execute([$employee['department_id']]);
+    $department = $stmt->fetch();
+
+    // Set default values in case there's missing data
+    // $start_date = !empty($employee['employment_start_date']) ? date("F j, Y", strtotime($employee['employment_start_date'])) : 'N/A';
+    // $end_date = !empty($payroll['pay_date']) ? date("F j, Y", strtotime($payroll['pay_date'])) : 'N/A';
+
+    // Month abbreviation
+    $start_date = !empty($employee['employment_start_date']) ? date("M j, Y", strtotime($employee['employment_start_date'])) : 'N/A';
+    $end_date = !empty($payroll['pay_date']) ? date("M j, Y", strtotime($payroll['pay_date'])) : 'N/A';
+
+
+    // Fetch earnings from payroll_earnings
+    $stmt = $pdo->prepare("
+        SELECT e.earning_name, pe.amount 
+        FROM payroll_earnings pe
+        JOIN earnings e ON pe.earning_id = e.id
+        WHERE pe.user_id = ?
+    ");
+    $stmt->execute([$user_id]);
+    $earnings = $stmt->fetchAll();
+
+    // Fetch deductions from payroll_deductions
+    $stmt = $pdo->prepare("
+        SELECT d.deduction_name, pd.amount 
+        FROM payroll_deductions pd
+        JOIN deductions d ON pd.deduction_id = d.id
+        WHERE pd.user_id = ?
+    ");
+    $stmt->execute([$user_id]);
+    $deductions = $stmt->fetchAll();
+
+    // Calculate totals
+    $total_earnings = $employee['salary'] + array_sum(array_column($earnings, 'amount'));
+    $total_deductions = array_sum(array_column($deductions, 'amount')) ?: 0;
+    $net_salary = $total_earnings - $total_deductions;
+    
+// Create new PDF document
+$pdf = new TCPDF();
+$pdf->SetCreator(PDF_CREATOR);
+$pdf->SetAuthor('Cedar College Inc.');
+$pdf->SetTitle('Employee Payslip');
+$pdf->SetMargins(10, 10, 10);
+$pdf->AddPage();
+
+// Company logo (ensure the path is correct)
+$logo = '../files/images/cedar_logo.png';
+$pdf->Image($logo, 80, 10, 50, 0, 'PNG');
+
+// Title
+$pdf->SetFont('helvetica', 'B', 16);
+$pdf->Cell(0, 10, 'Employee Payslip', 0, 1, 'C');
+
+// Employee details
+$pdf->SetFont('helvetica', '', 12);
+// Create PDF content
+$html = "
+<!DOCTYPE html>
+<html lang=\"en\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Payslip</title>
+    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px; }
+        .payslip-container { max-width: 700px; margin: auto; background: #fff; font-size: 12px; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); }
+        .header { text-align: center; margin: 0; }
+        .header h3 { margin: 0; color: #28a745; font-weight: bold; }
+        .header h6, p { font-family: \"Times New Roman\";}
+        #employeeDetails p, #companyDetails p { margin: 0 !important;}
+        hr {height: 2px !important; background-color: black;}
+        .table .title{ background-color:rgb(202, 248, 202) !important; width: 300px; text-align: center;}
+        .section-title { font-weight: bold; background: #f8f9fa; padding: 3px; }
+        .summary { font-weight: bold; text-align: right; margin-top: 10px; }
+        .logo {
+            margin-right: 20px; /* Moves the logo slightly to the right */
+            margin-left: 100px;
+        }
+
+        .header-text {
+            margin-left: -180px; /* Moves the header slightly to the left */
+        }
+
+        @page {
+            margin: 0;
+        }
+        @media print {
+            @page {
+                size: auto;
+                margin: 0;
+            }
+            body {
+                margin: 0;
+            }
+            .row {
+                display: flex !important;
+                flex-wrap: nowrap !important;
+            }
+            .col-md-6 {
+                width: 50% !important;
+            }
+            .print, .download {
+                display: none !important;
+            }
+            .payslip-container {
+                box-shadow: none !important;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class=\"payslip-container\">
+    <div class=\"header d-flex align-items-center\">
+        <div class=\"logo\">
+            <img src=\"../files/images/cedar_logo.png\" alt=\"Company Logo\" style=\"width: 80px; height: auto;\">
+        </div>
+        <div class=\"text-center flex-grow-1 header-text\">
+            <h3>PAYSLIP</h3>
+            <h6 style=\"margin: 0;\">CEDAR College Inc.</h6>
+            <p style=\"margin: 0;\">National Highway, Cadiz City, Negros Occidental</p>
+            <p>cedarcollege@gmail.com</p>
+        </div>
+    </div><br>
+        
+        <!-- Employee and Company Details -->
+        <div class=\"row d-flex justify-content-between\">
+            <div class=\"col-md-6\" id=\"employeeDetails\">
+                <p><strong>Employee Name:</strong> " . htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) . "</p>
+                <p><strong>Gender:</strong> <?= htmlspecialchars($employee['gender']) ?></p>
+                <p><strong>Phone:</strong> <?= htmlspecialchars($employee['phone']) ?></p>
+                <p><strong>Email:</strong> <?= htmlspecialchars($employee['email']) ?></p>
+            </div>
+            <div class=\"col-md-6 text-md-start\" id=\"companyDetails\">
+                <p><strong>Department:</strong> <?= htmlspecialchars($department['department_name'] ?? 'N/A') ?></p>
+                <p><strong>Employment Type:</strong> Full-Time</p>
+                <p><strong>Pay Period:</strong> <?= $start_date ?> - <?= $end_date ?></p>
+                <p><strong>Pay Date:</strong> <?= date("F j, Y") ?></p>
+            </div>
+        </div><hr>
+
+        <div class=\"section-title\">Earnings</div>
+        <table class=\"table table-bordered\">
+            <tr>
+                <td class=\"title\"><strong>Description</strong></td>
+                <td class=\" title text-center\"><strong>Amount</strong></td>
+            </tr>
+            <tr><td>Basic Salary</td><td class=\"text-end\">₱ <?= number_format($employee['salary'], 2) ?></td></tr>
+            <?php foreach ($earnings as $earning): ?>
+                <tr><td><?= htmlspecialchars($earning['earning_name']) ?></td><td class=\"text-end\">₱ <?= number_format($earning['amount'], 2) ?></td></tr>
+            <?php endforeach; ?>
+            <tr class=\"table-light\" style=\"font-weight: bold;\"><td><strong>Total Earnings</strong></td><td class=\"text-end\"><strong>₱ <?= number_format($total_earnings, 2) ?></strong></td></tr>
+        </table><hr>
+        
+        <div class=\"section-title\">Deductions</div>
+        <table class=\"table table-bordered\">
+            <tr><td class=\"title\"><strong>Description</strong></td><td class=\"title text-center\"><strong>Amount</strong></td></tr>
+            <?php foreach ($deductions as $deduction): ?>
+                <tr><td><?= htmlspecialchars($deduction['deduction_name']) ?></td><td class=\"text-end\">₱ <?= number_format($deduction['amount'], 2) ?></td></tr>
+            <?php endforeach; ?>
+            <tr class=\"table-light\" style=\"font-weight: bold;\"><td><strong>Total Deductions</strong></td><td class=\"text-end\"><strong>₱ <?= number_format($total_deductions, 2) ?></strong></td></tr>
+        </table>
+
+        <div class=\"summary\">
+            <p class=\"h5\">Net Pay: <strong>₱ <?= number_format($net_salary, 2) ?></strong></p>
+        </div><hr>
+
+        <div class=\"text-center mt-3\">
+            <p>For inquires, please feel free to contact <strong><?= htmlspecialchars($admin['first_name'] . ' ' . $admin['last_name']) ?></strong> at <strong><?= htmlspecialchars($admin['email']) ?></strong>.</p>
+        </div><br><br>
+
+        <div class=\"text-center mt-3\">
+            <button class=\"print btn btn-primary" onclick=\"window.print()\">Print Payslip</button>
+            <a href=\"../functions/generate_payslip.php?id=<?= $user_id ?>\" class=\"download btn btn-success\">Download Payslip</a>
+        </div>
+
+    </div>
+</body>
+</html>
+";
+
+// Add content to PDF
+$pdf->writeHTML($html, true, false, true, false, '');
+
+// Output the PDF (forces download)
+$pdf->Output("payslip_{$user_id}.pdf", 'D'); // 'D' = Download
+?>

@@ -270,19 +270,23 @@
 
                     </div>
 
+                    <?php $isEmployee = isset($employee['role']) && $employee['role'] === 'Employee'; ?>
+
                     <!-- Company Details -->
                     <div class="col-md-6">
                         <h6>COMPANY DETAILS</h6>
+
                         <div class="form-group">
                             <label class="form-label">Role Type:</label>
-                            <select class="form-select" name="role">
+                            <select class="form-select" name="role" <?= $isEmployee ? 'disabled' : '' ?>>
                                 <option value="Employee" <?= ($employee['role'] ?? '') == 'Employee' ? 'selected' : '' ?>>Employee</option>
                                 <option value="Admin" <?= ($employee['role'] ?? '') == 'Admin' ? 'selected' : '' ?>>Admin</option>
                             </select>
                         </div>
+
                         <div class="form-group">
                             <label class="form-label">Department:</label>
-                            <select class="form-select" name="department_id">
+                            <select class="form-select" name="department_id" <?= $isEmployee ? 'disabled' : '' ?>>
                                 <option value="" disabled>Select Department</option>
                                 <?php foreach ($departments as $dept): ?>
                                     <option value="<?= htmlspecialchars($dept['id']) ?>" <?= ($employee['department_id'] ?? '') == $dept['id'] ? 'selected' : '' ?>>
@@ -291,32 +295,35 @@
                                 <?php endforeach; ?>
                             </select>
                         </div>
+
                         <div class="form-group">
                             <label class="form-label">Employee Type:</label>
-                            <select class="form-select" name="employee_type">
+                            <select class="form-select" name="employee_type" <?= $isEmployee ? 'disabled' : '' ?>>
                                 <option value="Full-time" <?= ($employee['employee_type'] ?? '') == 'Full-time' ? 'selected' : '' ?>>Full-time</option>
                                 <option value="Part-time" <?= ($employee['employee_type'] ?? '') == 'Part-time' ? 'selected' : '' ?>>Part-time</option>
                                 <option value="Contractual" <?= ($employee['employee_type'] ?? '') == 'Contractual' ? 'selected' : '' ?>>Contractual</option>
                             </select>
                         </div>
+
                         <div class="form-group">
                             <label class="form-label">Employment Start Date:</label>
-                            <input type="date" class="form-control" name="employment_start_date" value="<?= htmlspecialchars($employee['employment_start_date'] ?? '') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Employment End Date:</label>
-                            <input type="date" class="form-control" name="employment_end_date" value="<?= htmlspecialchars($employee['employment_end_date'] ?? '') ?>">
+                            <input type="date" class="form-control" name="employment_start_date" value="<?= htmlspecialchars($employee['employment_start_date'] ?? '') ?>" <?= $isEmployee ? 'readonly' : '' ?>>
                         </div>
 
-                        <!-- Salary & Leave Balance -->
-                            <div class="form-group">
-                                <label class="form-label">Salary:</label>
-                                <input type="number" class="form-control" name="salary" value="<?= htmlspecialchars($employee['salary'] ?? '') ?>" placeholder="Enter salary">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Leave Balance:</label>
-                                <input type="number" class="form-control" name="leave_balance" value="<?= htmlspecialchars($employee['leave_balance'] ?? '') ?>" placeholder="Enter leave balance">
-                            </div>
+                        <div class="form-group">
+                            <label class="form-label">Employment End Date:</label>
+                            <input type="date" class="form-control" name="employment_end_date" value="<?= htmlspecialchars($employee['employment_end_date'] ?? '') ?>" <?= $isEmployee ? 'readonly' : '' ?>>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Salary:</label>
+                            <input type="number" class="form-control" name="salary" value="<?= htmlspecialchars($employee['salary'] ?? '') ?>" <?= $isEmployee ? 'readonly' : '' ?> placeholder="Enter salary">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Leave Balance:</label>
+                            <input type="number" class="form-control" name="leave_balance" value="<?= htmlspecialchars($employee['leave_balance'] ?? '') ?>" <?= $isEmployee ? 'readonly' : '' ?> placeholder="Enter leave balance">
+                        </div>
 
                         <div class="form-group">
                             <label class="form-label">Email:</label>

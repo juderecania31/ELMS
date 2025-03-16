@@ -8,10 +8,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $start_date = $_POST['startDate'];
     $end_date = $_POST['endDate'];
 
+    // Prevent applying for past dates
+    $current_date = new DateTime();
+    $start_date_obj = new DateTime($start_date);
+    $end_date_obj = new DateTime($end_date);
+
+    if ($start_date_obj < $current_date || $end_date_obj < $current_date) {
+        echo json_encode(['success' => false, 'message' => 'You cannot apply for a past date.']);
+        exit();
+    }
+
     // Calculate number of leave days
-    $date1 = new DateTime($start_date);
-    $date2 = new DateTime($end_date);
-    $days = $date1->diff($date2)->days + 1;
+    $days = $start_date_obj->diff($end_date_obj)->days + 1;
 
     // Check leave balance
     $balance_query = "SELECT leave_balance FROM users WHERE user_id = :user_id";

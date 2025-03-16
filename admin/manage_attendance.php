@@ -31,7 +31,7 @@
         }
         .content {
             margin-left: 220px; /* Adjust based on sidebar width */
-            padding: 50px 20px 20px 20px;
+            padding: 70px 20px 20px 20px;
             transition: margin-left 0.3s ease-in-out;
         }
         .sidebar.collapsed + .content {
@@ -51,7 +51,7 @@
         th, td {
             border: 1px solid #ddd;
             padding: 10px;
-            text-align: center;
+            text-align: center !important;
         }
         th {
             background-color: #28a745;
@@ -68,67 +68,38 @@
 </head>
 <body>
     <div class="content" id="content">
-        <h2>Employee Attendance Records</h2>
+        <h3>Employee Attendance Records</h3>
 
-            <!-- Summary Cards -->
-    <div class="row">
-        <div class="col-md-3">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Present Today</h5>
-                    <h2>25</h2>
+            <form method="GET" action="" class="row g-2 mb-3 align-items-end">
+                <div class="col-md-3 d-flex flex-column">
+                    <label for="start_date" class="form-label">Start Date:</label>
+                    <input type="date" id="start_date" name="start_date" class="form-control" 
+                        value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>">
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Late Today</h5>
-                    <h2>3</h2>
+                <div class="col-md-3 d-flex flex-column">
+                    <label for="end_date" class="form-label">End Date:</label>
+                    <input type="date" id="end_date" name="end_date" class="form-control" 
+                        value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>">
                 </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card text-white bg-danger mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">Absent Today</h5>
-                    <h2>5</h2>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <form method="GET" action="" class="row g-3 mb-3">
-        <div class="col-md-4">
-            <label for="start_date" class="form-label">Start Date:</label>
-            <input type="date" id="start_date" name="start_date" class="form-control w-50" value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>">
-        </div>
-        <div class="col-md-4">
-            <label for="end_date" class="form-label">End Date:</label>
-            <input type="date" id="end_date" name="end_date" class="form-control w-50" value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>">
-        </div>
-        <div class="col-md-4 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary me-2">Filter</button>
-            <a href="manage_attendance.php" class="btn btn-secondary">Reset</a>
-        </div>
-    </form>
+            </form>
 
 
-
-        <table id="attendance_table" class="display" style="width:100%">
-            <thead>
-                <tr>
-                    <th>Employee Name</th>
-                    <th>Department</th>
-                    <th>Attendance Date</th>
-                    <th>Time In</th>
-                    <th>Time Out</th>
-                    <th>Total Hours</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
+            <table id="attendance_table" class="display" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Department</th>
+                        <th>Attendance Date</th>
+                        <th>Time In (Morning)</th>
+                        <th>Time Out (Morning)</th>
+                        <th>Time In (Afternoon)</th>
+                        <th>Time Out (Afternoon)</th>
+                        <th>Total Hours</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
 
     </div>
 

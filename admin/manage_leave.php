@@ -72,7 +72,7 @@
         }
 
         th, td {
-            border: 1px solid #ddd;
+            border: 1px solid #999;
             padding: 10px;
             text-align: center !important;
             text-overflow: ellipsis !important;
@@ -83,8 +83,8 @@
             text-align: center;
         }
 
-        .status-approved { background-color: #28a745; padding: 5px; }
-        .status-pending { background-color: #FFA500; padding: 5px; }
+        .status-approved { background-color: #28a745; padding: 5px; font-weight: bold;}
+        .status-pending { background-color: #FFA500; padding: 5px; font-weight: bold;}
 
         /* Custom Scrollbar Style */
         ::-webkit-scrollbar {width: 8px;height: 8px;}

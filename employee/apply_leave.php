@@ -81,6 +81,22 @@ include '../includes/fade_in.php';
         tr:hover {
             background-color: #f1f1f1;
         }
+        .status-cell {
+            padding: 5px;
+            font-weight: bold;
+        }
+
+        .approved-status {
+            background-color: green;
+            color: white;
+        }
+
+        .pending-status {
+            background-color: orange;
+            color: white;
+        }
+
+
         /* Custom Scrollbar Style */
         ::-webkit-scrollbar {width: 8px;height: 8px;}
         ::-webkit-scrollbar-thumb {background-color: #008000;border-radius: 6px;}

@@ -26,24 +26,27 @@
     $stmt->execute();
     $on_leave_today_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
 
-    // Fetch attendance records with employee and department details
-    $query = "SELECT 
-            u.first_name, 
-            u.last_name, 
-            d.department_name, 
-            MAX(CASE WHEN TIME(a.morning_time_in) BETWEEN '06:00:00' AND '12:00:00' THEN a.morning_time_in END) AS morning_time_in,
-            MAX(CASE WHEN TIME(a.morning_time_out) BETWEEN '06:00:00' AND '12:00:00' THEN a.morning_time_out END) AS morning_time_out,
-            MAX(CASE WHEN TIME(a.afternoon_time_in) BETWEEN '12:00:01' AND '18:00:00' THEN a.afternoon_time_in END) AS afternoon_time_in,
-            MAX(CASE WHEN TIME(a.afternoon_time_out) BETWEEN '12:00:01' AND '18:00:00' THEN a.afternoon_time_out END) AS afternoon_time_out,
-            TIMEDIFF(MAX(a.afternoon_time_out), MIN(a.afternoon_time_out)) AS total_hours
-        FROM attendance a
-        LEFT JOIN users u ON a.user_id = u.user_id
-        LEFT JOIN departments d ON u.department_id = d.id
-        WHERE DATE(a.morning_time_in) = CURDATE()
-        GROUP BY u.user_id, d.department_name
-        ORDER BY morning_time_in DESC;";
+    // Fetch today's attendance records with employee details
+    // Fetch today's attendance records with employee details
+    $stmt = $pdo->prepare("SELECT
+                            u.first_name, 
+                            u.last_name, 
+                            a.morning_time_in, 
+                            a.morning_time_out, 
+                            a.afternoon_time_in, 
+                            a.afternoon_time_out,
+                            TIMEDIFF(IFNULL(a.morning_time_out, '00:00:00'), IFNULL(a.morning_time_in, '00:00:00')) AS morning_hours,
+                            TIMEDIFF(IFNULL(a.afternoon_time_out, '00:00:00'), IFNULL(a.afternoon_time_in, '00:00:00')) AS afternoon_hours,
+                            SEC_TO_TIME(
+                                IFNULL(TIME_TO_SEC(TIMEDIFF(a.morning_time_out, a.morning_time_in)), 0) + 
+                                IFNULL(TIME_TO_SEC(TIMEDIFF(a.afternoon_time_out, a.afternoon_time_in)), 0)
+                            ) AS total_hours
+                        FROM attendance a
+                        JOIN users u ON a.user_id = u.user_id
+                        WHERE DATE(a.date) = CURDATE()
+                        ");
 
-    $stmt = $pdo->query($query);
+    $stmt->execute();
     $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

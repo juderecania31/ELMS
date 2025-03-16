@@ -15,12 +15,13 @@ foreach ($leave_requests as $row) {
     $start_date = date("F d, Y", strtotime($row['start_date']));
     $end_date = date("F d, Y", strtotime($row['end_date']));
 
+   
     echo "<tr>
         <td>{$row['leave_type']}</td>
         <td>{$start_date}</td>
         <td>{$end_date}</td>
         <td>{$row['days']}</td>
-        <td>{$row['status']}</td>
+        <td class='status-cell " . strtolower($row['status']) . "-status'>{$row['status']}</td>
     </tr>";
 }
 ?>
