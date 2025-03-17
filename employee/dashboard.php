@@ -29,7 +29,7 @@
     
     
     try {
-        $stmt = $pdo->prepare("SELECT id, morning_time_in, morning_time_out, afternoon_time_in, afternoon_time_out, total_hours 
+        $stmt = $pdo->prepare("SELECT id, date, morning_time_in, morning_time_out, afternoon_time_in, afternoon_time_out, total_hours 
                                FROM attendance WHERE user_id = ? ORDER BY date DESC");
         $stmt->execute([$user_id]);
         $attendance_records = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -248,6 +248,13 @@
             }
         }
 
+        th:nth-child(1) { width: 29%; }
+        th:nth-child(2) { width: 15%; } 
+        th:nth-child(3) { width: 15%; } 
+        th:nth-child(4) { width: 15%; } 
+        th:nth-child(5) { width: 18%; } 
+        th:nth-child(6) { width: 8%; }  
+
         /* Custom Scrollbar Style */
         ::-webkit-scrollbar {width: 8px;height: 8px;}
         ::-webkit-scrollbar-thumb {background-color: #008000;border-radius: 6px;}
@@ -311,13 +318,13 @@
                 <?php if (!empty($attendance_records)): ?>
                     <?php foreach ($attendance_records as $record): ?>
                         <tr>
-                            <td><?php echo date("F d, Y", strtotime($record['date'])); ?></td>
-                            <td><?php echo htmlspecialchars($record['morning_time_in'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($record['morning_time_out'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($record['afternoon_time_in'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($record['afternoon_time_out'] ?? '—'); ?></td>
-                            <td><?php echo htmlspecialchars($record['formatted_total_hours'] ?? '—'); ?></td>
-                        </tr>
+                        <td><?= !empty($record['date']) ? date("F d, Y", strtotime($record['date'])) : "N/A"; ?></td>
+                        <td><?= htmlspecialchars($record['morning_time_in'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['morning_time_out'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['afternoon_time_in'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['afternoon_time_out'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['total_hours'] ?? '-') ?></td>
+                    </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <!-- <tr><td colspan="5">No attendance records found.</td></tr> -->
@@ -330,18 +337,18 @@
     
     <!-- Message Modal -->
     <div class="modal fade" id="responseModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="modalTitle">Notification</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Notification</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body d-flex justify-content-center" id="modalMessage"></div>
+            <div class="modal-footer d-flex justify-content-center">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalCloseBtn">Close</button>
+            </div>
+            </div>
         </div>
-        <div class="modal-body d-flex justify-content-center" id="modalMessage"></div>
-        <div class="modal-footer d-flex justify-content-center">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="modalCloseBtn">Close</button>
-        </div>
-        </div>
-    </div>
     </div>
 
 <!-- Bootstrap JavaScript (includes Popper.js for modals) -->

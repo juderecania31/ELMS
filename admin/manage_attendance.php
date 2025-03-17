@@ -10,7 +10,71 @@
     $page_title = "Manage Attendance";
     include '../includes/navbar.php';
     include '../includes/fade_in.php';
+
+    // Fetch attendance data using PDO
+    function fetchAttendance($pdo, $start_date = null, $end_date = null) {
+        $query = "SELECT 
+                    a.*, 
+                    u.first_name, 
+                    u.last_name 
+                  FROM attendance a
+                  JOIN users u ON a.user_id = u.user_id";
+    
+        // Apply date filters if provided
+        if (!empty($start_date) && !empty($end_date)) {
+            $query .= " WHERE a.date BETWEEN :start_date AND :end_date";
+        }
+    
+        // Ensure the records are sorted correctly
+        $query .= " ORDER BY a.date ASC, a.user_id ASC";
+    
+        $stmt = $pdo->prepare($query);
+    
+        if (!empty($start_date) && !empty($end_date)) {
+            $stmt->bindParam(':start_date', $start_date);
+            $stmt->bindParam(':end_date', $end_date);
+        }
+    
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    // Function to fetch attendance filtered by month
+    function fetchAttendanceByMonth($pdo, $search_month = null) {
+        $query = "SELECT 
+                    a.*, 
+                    u.first_name, 
+                    u.last_name 
+                FROM attendance a
+                JOIN users u ON a.user_id = u.user_id";
+
+        if (!empty($search_month)) {
+            $query .= " WHERE a.date LIKE :search_month";
+        }
+
+        $query .= " ORDER BY a.date ASC, u.last_name ASC"; // Order by date and employee name
+
+        $stmt = $pdo->prepare($query);
+
+        if (!empty($search_month)) {
+            $search_month_param = $search_month . '%'; // Ensures it matches "YYYY-MM"
+            $stmt->bindParam(':search_month', $search_month_param, PDO::PARAM_STR);
+        }
+
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Handle search input
+    $search_month = $_GET['search_month'] ?? null;
+    $attendance_records = fetchAttendanceByMonth($pdo, $search_month);
+        
+    // Handle filter request
+    $start_date = $_GET['start_date'] ?? null;
+    $end_date = $_GET['end_date'] ?? null;
+    $attendance_records = fetchAttendance($pdo, $start_date, $end_date);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -64,42 +128,67 @@
         tbody tr:hover {
             background-color: #ddd;
         }
+        th:nth-child(1) { width: 20%; }
+        th:nth-child(2) { width: 20%; } 
+        th:nth-child(3) { width: 12%; } 
+        th:nth-child(4) { width: 12%; } 
+        th:nth-child(5) { width: 12%; } 
+        th:nth-child(6) { width: 12%; } 
+        th:nth-child(7) { width: 12%; } 
+
+        /* Custom Scrollbar Style */
+        ::-webkit-scrollbar {width: 8px;height: 8px;}
+        ::-webkit-scrollbar-thumb {background-color: #008000;border-radius: 6px;}
+        ::-webkit-scrollbar-thumb:hover {background-color: #006400;}
+        ::-webkit-scrollbar-track {background: #f1f1f1; border-radius: 6px;}
+        ::-webkit-scrollbar-track-piece {background: #f1f1f1;}
+        ::-webkit-scrollbar-corner {background: transparent;}
+        
     </style>
 </head>
 <body>
     <div class="content" id="content">
         <h3>Employee Attendance Records</h3>
 
-            <form method="GET" action="" class="row g-2 mb-3 align-items-end">
-                <div class="col-md-3 d-flex flex-column">
-                    <label for="start_date" class="form-label">Start Date:</label>
-                    <input type="date" id="start_date" name="start_date" class="form-control" 
-                        value="<?= htmlspecialchars($_GET['start_date'] ?? '') ?>">
-                </div>
-                <div class="col-md-3 d-flex flex-column">
-                    <label for="end_date" class="form-label">End Date:</label>
-                    <input type="date" id="end_date" name="end_date" class="form-control" 
-                        value="<?= htmlspecialchars($_GET['end_date'] ?? '') ?>">
-                </div>
-            </form>
+        <!-- Search Form -->
+        <!-- <form method="GET" action="" class="row g-2 mb-3 align-items-end">
+            <div class="col-md-3 d-flex flex-column">
+                <label for="search_month" class="form-label">Search Month:</label>
+                <input type="month" id="search_month" name="search_month" class="form-control" 
+                    value="<?= htmlspecialchars($search_month ?? '') ?>">
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+            </div>
+        </form> -->
 
-
-            <table id="attendance_table" class="display" style="width:100%">
-                <thead>
+            <!-- Attendance Table -->
+        <table id="attendance_table" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Attendance Date</th>
+                    <th>Time In (Morning)</th>
+                    <th>Time Out (Morning)</th>
+                    <th>Time In (Afternoon)</th>
+                    <th>Time Out (Afternoon)</th>
+                    <th>Total Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($attendance_records as $record): ?>
                     <tr>
-                        <th>Employee Name</th>
-                        <th>Department</th>
-                        <th>Attendance Date</th>
-                        <th>Time In (Morning)</th>
-                        <th>Time Out (Morning)</th>
-                        <th>Time In (Afternoon)</th>
-                        <th>Time Out (Afternoon)</th>
-                        <th>Total Hours</th>
+                        <td><?= htmlspecialchars($record['first_name'] . ' ' . $record['last_name']) ?></td>
+                        <td><?= date("F d, Y", strtotime($record['date'])) ?></td>
+                        <td><?= htmlspecialchars($record['morning_time_in'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['morning_time_out'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['afternoon_time_in'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['afternoon_time_out'] ?? '-') ?></td>
+                        <td><?= htmlspecialchars($record['total_hours'] ?? '-') ?></td>
                     </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
 
     </div>
 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 14, 2025 at 11:23 AM
+-- Generation Time: Mar 17, 2025 at 12:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `elms`
+-- Database: `elmsv2`
 --
 
 -- --------------------------------------------------------
@@ -42,10 +42,6 @@ CREATE TABLE `attendance` (
 -- Dumping data for table `attendance`
 --
 
-INSERT INTO `attendance` (`id`, `user_id`, `date`, `morning_time_in`, `morning_time_out`, `afternoon_time_in`, `afternoon_time_out`, `total_hours`) VALUES
-(39, 10, '2025-03-12', NULL, NULL, '09:04:39', '09:05:15', '00:00:36'),
-(40, 10, '2025-03-13', '08:31:07', '08:31:20', '06:26:41', '06:26:45', '00:00:17');
-
 -- --------------------------------------------------------
 
 --
@@ -64,11 +60,11 @@ CREATE TABLE `deductions` (
 --
 
 INSERT INTO `deductions` (`id`, `deduction_name`, `description`, `created_at`) VALUES
-(4, 'Income Tax', 'Government tax deduction', '2025-03-13 14:26:00'),
-(5, 'Health Insurance', 'Monthly health plan contribution', '2025-03-13 14:26:00'),
-(6, 'Retirement Fund', 'Retirement plan contribution', '2025-03-13 14:26:00'),
-(7, 'Loan Repayment', 'Salary loan repayment', '2025-03-13 14:26:00'),
-(8, 'Tardiness Deduction', 'Deductions for being late', '2025-03-13 14:26:00');
+(4, 'Income Tax', 'Government tax deduction', '2025-03-13 06:26:00'),
+(5, 'Health Insurance', 'Monthly health plan contribution', '2025-03-13 06:26:00'),
+(6, 'Retirement Fund', 'Retirement plan contribution', '2025-03-13 06:26:00'),
+(7, 'Loan Repayment', 'Salary loan repayment', '2025-03-13 06:26:00'),
+(8, 'Tardiness Deduction', 'Deductions for being late', '2025-03-13 06:26:00');
 
 -- --------------------------------------------------------
 
@@ -88,9 +84,9 @@ CREATE TABLE `departments` (
 --
 
 INSERT INTO `departments` (`id`, `department_name`, `department_description`, `created_at`) VALUES
-(2, 'HR Department', 'Manages employee records and hiring', '2025-02-26 08:04:37'),
-(4, 'IT', 'Handles technology and other related concerns.', '2025-02-27 02:04:24'),
-(5, 'ICT', 'Information and Communications Technology', '2025-02-27 02:06:10');
+(2, 'HR Department', 'Manages employee records and hiring', '2025-02-26 00:04:37'),
+(4, 'IT', 'Handles technology and other related concerns.', '2025-02-26 18:04:24'),
+(5, 'ICT', 'Information and Communications Technology', '2025-02-26 18:06:10');
 
 -- --------------------------------------------------------
 
@@ -110,9 +106,10 @@ CREATE TABLE `earnings` (
 --
 
 INSERT INTO `earnings` (`id`, `earning_name`, `description`, `created_at`) VALUES
-(6, 'Performance Bonus', 'Bonus for excellent performance', '2025-03-13 14:25:42'),
-(7, 'Sales Commission', 'Commission for sales achievements', '2025-03-13 14:25:42'),
-(8, 'Transport Allowance', 'Allowance for daily commute', '2025-03-13 14:25:42');
+(6, 'Performance Bonus', 'Bonus for excellent performance', '2025-03-13 06:25:42'),
+(7, 'Sales Commission', 'Commission for sales achievements', '2025-03-13 06:25:42'),
+(8, 'Transport Allowance', 'Allowance for daily commute', '2025-03-13 06:25:42'),
+(10, 'Allowance', 'alejnqw', '2025-03-17 00:58:10');
 
 -- --------------------------------------------------------
 
@@ -127,8 +124,12 @@ CREATE TABLE `leave_request` (
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
   `days` int(11) NOT NULL,
-  `status` enum('Approved','Pending') NOT NULL DEFAULT 'Approved'
+  `status` enum('Pending','Approved') NOT NULL DEFAULT 'Pending'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `leave_request`
+--
 
 -- --------------------------------------------------------
 
@@ -148,6 +149,10 @@ CREATE TABLE `payroll` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `payroll`
+--
+
 -- --------------------------------------------------------
 
 --
@@ -166,9 +171,6 @@ CREATE TABLE `payroll_deductions` (
 -- Dumping data for table `payroll_deductions`
 --
 
-INSERT INTO `payroll_deductions` (`id`, `user_id`, `deduction_id`, `amount`, `created_at`) VALUES
-(30, 10, 5, 0.00, '2025-03-14 02:32:06');
-
 -- --------------------------------------------------------
 
 --
@@ -186,10 +188,6 @@ CREATE TABLE `payroll_earnings` (
 --
 -- Dumping data for table `payroll_earnings`
 --
-
-INSERT INTO `payroll_earnings` (`id`, `user_id`, `earning_id`, `amount`, `created_at`) VALUES
-(63, 10, 6, 9.00, '2025-03-14 02:32:06'),
-(64, 10, 7, 0.00, '2025-03-14 02:32:06');
 
 -- --------------------------------------------------------
 
@@ -225,9 +223,9 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`user_id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `role`, `gender`, `phone`, `address`, `birthdate`, `employment_start_date`, `department_id`, `created_at`, `profile_picture`, `employee_type`, `salary`, `leave_balance`, `reset_token`, `token_expiry`, `employment_end_date`) VALUES
-(1, 'Admin', '', 'User', 'admin@gmail.com', '$2y$10$4gkMOXDytIkBqM9pSt6FL.cCxn5KxFT3UpFiJ8Wfguto8DOmdvKca', 'Admin', 'Male', '09561595988', 'Brgy. Daga Cadiz City', '2003-05-31', '2025-02-21', 2, '2025-02-24 12:17:39', '1741746435_elms.jpg', 'Full-time', 0.00, 0, '8b5ff27dc492794e6c33d2ae4f6481a34e2439c2e906c0b34acd22af669aac9a', '2025-03-12 09:38:10', '0000-00-00'),
-(10, 'Employee', '', 'User', 'employee@gmail.com', '$2y$10$drDpBCNjtSXPDuzkr.j4FehNFwfoC6EGkfdMSgP730VRm2segVavm', 'Employee', 'Male', '09561595988', 'Prk. Malipayun Brgy. Daga Cadiz City Negros Occidental', '2003-05-31', '2025-02-11', 2, '2025-02-27 22:29:30', '1741665249_1740695126_cedar2.png', 'Full-time', 2000.00, 20, '694737ec0eac693c659879b49303ccde2e1fc43a5f2de8bab680d12545034fe4', '2025-03-12 09:39:26', '2025-03-11');
+INSERT INTO `users` (`user_id`, `first_name`, `middle_name`, `last_name`, `email`, `password`, `role`, `gender`, `phone`, `address`, `birthdate`, `employment_start_date`, `employment_end_date`, `department_id`, `created_at`, `profile_picture`, `employee_type`, `salary`, `leave_balance`, `reset_token`, `token_expiry`) VALUES
+(1, 'Admin', '', 'User', 'admin@gmail.com', '$2y$10$swOfciL5lxr/5nQhnpia6eiXrutqDCRQza0TRWhIskx6oVw/Gv2M2', 'Admin', 'Male', '09561595988', 'Brgy. Daga Cadiz City', '2003-05-31', '2025-02-21', '0000-00-00', 2, '2025-02-24 04:17:39', '1742185947_cedar logo.png', 'Full-time', 0.00, 0, '8b5ff27dc492794e6c33d2ae4f6481a34e2439c2e906c0b34acd22af669aac9a', '2025-03-12 09:38:10'),
+
 --
 -- Triggers `users`
 --
@@ -238,60 +236,208 @@ CREATE TRIGGER `after_user_insert` AFTER INSERT ON `users` FOR EACH ROW BEGIN
 END
 $$
 DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `prevent_last_admin_delete` BEFORE DELETE ON `users` FOR EACH ROW BEGIN
+    DECLARE admin_count INT;
+
+    -- Count the number of admins
+    SELECT COUNT(*) INTO admin_count FROM users WHERE role = 'Admin';
+
+    -- If there is only one admin, prevent deletion
+    IF admin_count <= 1 AND OLD.role = 'Admin' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot delete the last Admin!';
+    END IF;
+END
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `prevent_last_admin_edit` BEFORE UPDATE ON `users` FOR EACH ROW BEGIN
+    DECLARE admin_count INT;
+
+    -- Count the number of admins
+    SELECT COUNT(*) INTO admin_count FROM users WHERE role = 'Admin';
+
+    -- Prevent changing role if only one admin exists
+    IF admin_count <= 1 AND OLD.role = 'Admin' AND NEW.role <> 'Admin' THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot change the role of the last Admin!';
+    END IF;
+END
+$$
+DELIMITER ;
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `attendance`
+--
+ALTER TABLE `attendance`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `unique_user_date` (`user_id`,`date`),
+  ADD UNIQUE KEY `unique_attendance` (`user_id`,`date`);
+
+--
+-- Indexes for table `deductions`
+--
+ALTER TABLE `deductions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `deduction_name` (`deduction_name`);
+
+--
+-- Indexes for table `departments`
+--
+ALTER TABLE `departments`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `department_name` (`department_name`);
+
+--
+-- Indexes for table `earnings`
+--
+ALTER TABLE `earnings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `earning_name` (`earning_name`);
+
+--
+-- Indexes for table `leave_request`
+--
+ALTER TABLE `leave_request`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `payroll`
+--
+ALTER TABLE `payroll`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `payroll_deductions`
+--
+ALTER TABLE `payroll_deductions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `deduction_id` (`deduction_id`);
+
+--
+-- Indexes for table `payroll_earnings`
+--
+ALTER TABLE `payroll_earnings`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`),
+  ADD KEY `earning_id` (`earning_id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`user_id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `department_id` (`department_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
 
 --
 -- AUTO_INCREMENT for table `attendance`
 --
 ALTER TABLE `attendance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
 
 --
 -- AUTO_INCREMENT for table `deductions`
 --
 ALTER TABLE `deductions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `departments`
 --
 ALTER TABLE `departments`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `earnings`
 --
 ALTER TABLE `earnings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `leave_request`
 --
 ALTER TABLE `leave_request`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `payroll`
 --
 ALTER TABLE `payroll`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `payroll_deductions`
 --
 ALTER TABLE `payroll_deductions`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
 
 --
 -- AUTO_INCREMENT for table `payroll_earnings`
 --
 ALTER TABLE `payroll_earnings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `attendance`
+--
+ALTER TABLE `attendance`
+  ADD CONSTRAINT `attendance_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `leave_request`
+--
+ALTER TABLE `leave_request`
+  ADD CONSTRAINT `leave_request_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payroll`
+--
+ALTER TABLE `payroll`
+  ADD CONSTRAINT `payroll_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
+
+--
+-- Constraints for table `payroll_deductions`
+--
+ALTER TABLE `payroll_deductions`
+  ADD CONSTRAINT `payroll_deductions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payroll_deductions_ibfk_2` FOREIGN KEY (`deduction_id`) REFERENCES `deductions` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `payroll_earnings`
+--
+ALTER TABLE `payroll_earnings`
+  ADD CONSTRAINT `payroll_earnings_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `payroll_earnings_ibfk_2` FOREIGN KEY (`earning_id`) REFERENCES `earnings` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`department_id`) REFERENCES `departments` (`id`) ON DELETE SET NULL;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

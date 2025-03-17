@@ -9,7 +9,7 @@
     $user_id = $_GET['id'];
 
     // Fetch employee details
-    $stmt = $pdo->prepare("SELECT first_name, last_name, department_id, gender, salary, email, phone, address, employment_start_date FROM users WHERE user_id = ?");
+    $stmt = $pdo->prepare("SELECT first_name, middle_name, last_name, department_id, gender, salary, email, phone, address, employee_type, employment_start_date FROM users WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $employee = $stmt->fetch();
 
@@ -18,7 +18,7 @@
         die("Employee not found.");
     }
 
-    $stmt = $pdo->prepare("SELECT first_name, last_name, email FROM users WHERE role = 'Admin' LIMIT 1");
+    $stmt = $pdo->prepare("SELECT first_name, middle_name, last_name, email, phone FROM users WHERE role = 'Admin' LIMIT 1");
     $stmt->execute();
     $admin = $stmt->fetch();
 
@@ -37,8 +37,7 @@
 
     // Month abbreviation
     $start_date = !empty($employee['employment_start_date']) ? date("M j, Y", strtotime($employee['employment_start_date'])) : 'N/A';
-    $end_date = !empty($payroll['pay_date']) ? date("M j, Y", strtotime($payroll['pay_date'])) : 'N/A';
-
+    $end_date = isset($payroll['pay_date']) && !empty($payroll['pay_date']) ? date("M j, Y", strtotime($payroll['pay_date'] . " -1 day")): 'N/A';
 
     // Fetch earnings from payroll_earnings
     $stmt = $pdo->prepare("
@@ -81,7 +80,8 @@
         .header h6, p { font-family: "Times New Roman";}
         #employeeDetails p, #companyDetails p { margin: 0 !important;}
         hr {height: 2px !important; background-color: black;}
-        .table .title{ background-color:rgb(202, 248, 202) !important; width: 300px; text-align: center;}
+        .table .title{ background-color:rgb(177, 245, 177) !important; width: 300px; text-align: center;}
+        td { border: 1px solid #999 !important;}
         .section-title { font-weight: bold; background: #f8f9fa; padding: 3px; }
         .summary { font-weight: bold; text-align: right; margin-top: 10px; }
         .logo {
@@ -117,6 +117,8 @@
             .payslip-container {
                 box-shadow: none !important;
             }
+            .title{ background-color:rgb(177, 245, 177) !important; width: 300px; text-align: center;}
+            td { border: 1px solid #999 !important;}
         }
 
     </style>
@@ -136,19 +138,21 @@
     </div><br>
         
         <!-- Employee and Company Details -->
+        <div class="row">
         <div class="row d-flex justify-content-between">
             <div class="col-md-6" id="employeeDetails">
-                <p><strong>Employee Name:</strong> <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['last_name']) ?></p>
+                <p><strong>Employee Name:</strong> <?= htmlspecialchars($employee['first_name'] . ' ' . $employee['middle_name'] . ' ' . $employee['last_name']) ?></p>
                 <p><strong>Gender:</strong> <?= htmlspecialchars($employee['gender']) ?></p>
                 <p><strong>Phone:</strong> <?= htmlspecialchars($employee['phone']) ?></p>
                 <p><strong>Email:</strong> <?= htmlspecialchars($employee['email']) ?></p>
             </div>
             <div class="col-md-6 text-md-start" id="companyDetails">
                 <p><strong>Department:</strong> <?= htmlspecialchars($department['department_name'] ?? 'N/A') ?></p>
-                <p><strong>Employment Type:</strong> Full-Time</p>
+                <p><strong>Employment Type:</strong> <?= htmlspecialchars($employee['employee_type']) ?></p>
                 <p><strong>Pay Period:</strong> <?= $start_date ?> - <?= $end_date ?></p>
-                <p><strong>Pay Date:</strong> <?= date("F j, Y") ?></p>
+                <p><strong>Pay Date:</strong> <?= !empty($payroll['pay_date']) ? date("F j, Y", strtotime($payroll['pay_date'])) : 'N/A' ?></p>
             </div>
+        </div>
         </div><hr>
 
         <div class="section-title">Earnings</div>
@@ -175,15 +179,25 @@
 
         <div class="summary">
             <p class="h5">Net Pay: <strong>₱ <?= number_format($net_salary, 2) ?></strong></p>
+        </div><br><br>
+            
+        <div class="row d-flex justify-content-between">
+            <div class="col-md-6">
+                <p style="margin: 0;">______________________________</p>
+                <p>Approved by: <strong><?= htmlspecialchars($admin['first_name'] . ' ' . $admin['last_name']) ?></strong></p>
+            </div>
+            <div class="col-md-6 text-md-start">
+                <p style="margin: 0;">______________________________</p>
+                <p>Received by: <strong><?= htmlspecialchars($employee['first_name']  . ' ' . $employee['middle_name'] . ' ' . $employee['last_name']) ?></strong></p>
+            </div>
         </div><hr>
 
         <div class="text-center mt-3">
-            <p>For inquires, please feel free to contact <strong><?= htmlspecialchars($admin['first_name'] . ' ' . $admin['last_name']) ?></strong> at <strong><?= htmlspecialchars($admin['email']) ?></strong>.</p>
+            <p>For inquires, please feel free to contact <strong><?= htmlspecialchars($admin['first_name'] . $admin['middle_name'] . ' ' . $admin['last_name']) ?></strong> at <strong><?= htmlspecialchars($admin['phone']) ?></strong> or <strong><?= htmlspecialchars($admin['email']) ?></strong>.</p>
         </div><br><br>
 
         <div class="text-center mt-3">
-            <button class="print btn btn-primary" onclick="window.print()">Print Payslip</button>
-            <a href="../functions/generate_payslip.php?id=<?= $user_id ?>" class="download btn btn-success">Download Payslip</a>
+            <button class="print btn btn-success" onclick="window.print()">Print Payslip</button>
         </div>
 
     </div>

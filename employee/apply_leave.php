@@ -1,8 +1,16 @@
 <?php
-include '../db.php';
-$page_title = "Apply Leave";
-include '../includes/navbar.php';    
-include '../includes/fade_in.php';
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Employee') {
+        header("Location: ../index.php");
+        exit();
+    }
+    require_once '../db.php';
+    $page_title = "Apply Leave";
+    include '../includes/navbar.php';
+    include '../includes/fade_in.php';
 
 ?>
 

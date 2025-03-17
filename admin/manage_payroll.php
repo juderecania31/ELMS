@@ -92,14 +92,14 @@
             background-color: #d9d9d9;
         }
 
-        th:nth-of-type(1), td:nth-of-type(1) { width: 20%; }
-        th:nth-of-type(2), td:nth-of-type(2) { width: 14%; }
-        th:nth-of-type(3), td:nth-of-type(3) { width: 14%; }
-        th:nth-of-type(4), td:nth-of-type(4) { width: 14%; }
-        th:nth-of-type(5), td:nth-of-type(5) { width: 10%; }
-        th:nth-of-type(6), td:nth-of-type(6) { width: 14%; }
-        th:nth-of-type(7), td:nth-of-type(7) { width: 14%; }
-        
+        .payroll-table th:nth-of-type(1), td:nth-of-type(1) { width: 20%; }
+        .payroll-table th:nth-of-type(2), td:nth-of-type(2) { width: 14%; }
+        .payroll-table th:nth-of-type(3), td:nth-of-type(3) { width: 14%; }
+        .payroll-table th:nth-of-type(4), td:nth-of-type(4) { width: 14%; }
+        .payroll-table th:nth-of-type(5), td:nth-of-type(5) { width: 10%; }
+        .payroll-table th:nth-of-type(6), td:nth-of-type(6) { width: 14%; }
+        .payroll-table th:nth-of-type(7), td:nth-of-type(7) { width: 14%; }
+
         .btn-add {
             padding: 8px 12px;
             margin: 5px;
@@ -208,8 +208,8 @@
         <h3>Manage Payroll</h3>
         <div class="tabs">
             <div class="tab active" onclick="switchTab(event, 'payroll')">PAYROLL SECTION</div>
-            <div class="tab" onclick="switchTab(event, 'earnings')">EARNINGS SECTION</div>
-            <div class="tab" onclick="switchTab(event, 'deductions')">DEDUCTIONS SECTION</div>
+            <div class="tab" onclick="switchTab(event, 'earnings')">EARNING TYPES</div>
+            <div class="tab" onclick="switchTab(event, 'deductions')">DEDUCTION TYPES</div>
         </div>
 
         <div id="payroll" class="tab-content active">
@@ -282,10 +282,13 @@
 
         <div id="earnings" class="tab-content">
             <div class="earning-container">
-                <button class="btn-add " data-bs-toggle="modal" data-bs-target="#earningsModal">
-                    ➕ Add Earning
-                </button>
-                <table id="earningsTable">
+                <div class="d-flex justify-content-end">
+                    <button class="btn-add" data-bs-toggle="modal" data-bs-target="#earningsModal">
+                        ➕ Add Earning
+                    </button>
+                </div>
+
+                <table class="earning-table" id="earningsTable">
                     <thead>
                         <tr>
                             <th>Earning Type</th>
@@ -333,10 +336,13 @@
 
         <div id="deductions" class="tab-content">
             <div class="deductions-container">
-                <button class="btn-add " data-bs-toggle="modal" data-bs-target="#deductionsModal">
-                    ➕ Add Deduction
-                </button>                
-                <table id="deductionsTable">
+                <div class="d-flex justify-content-end">
+                    <button class="btn-add " data-bs-toggle="modal" data-bs-target="#deductionsModal">
+                        ➕ Add Deduction
+                    </button>                
+                </div>
+                
+                <table class="deduction-table" id="deductionsTable">
                     <thead>
                         <tr>
                             <th>Deduction Type</th>
