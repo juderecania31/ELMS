@@ -1,5 +1,4 @@
-<?php ob_start(); ?> 
-<style> 
+<style>
     /* Fade-in effect */
     body {
         opacity: 0;
@@ -16,4 +15,3 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 10); // Small delay ensures consistency
 });
 </script>
-<?php ob_end_flush(); ?> 

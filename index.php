@@ -1,5 +1,4 @@
 <?php
-ob_start(); // Start output buffering
 session_start();
 require 'db.php'; // Include database connection
 // Handle login form submission
@@ -21,8 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 // Redirect based on role
                 if ($user['role'] == 'Admin') {
                     header("Location: admin/dashboard.php");
+                    exit();
                 } else {
                     header("Location: employee/dashboard.php");
+                    exit();
                 }
                 exit();
             } else {
@@ -35,8 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['error'] = "Please fill in all fields.";
     }
 }
-// include 'includes/fade_in.php';
-ob_end_flush(); // Flush output buffer
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,6 +64,14 @@ ob_end_flush(); // Flush output buffer
         ::-webkit-scrollbar-track {background: #f1f1f1; border-radius: 6px;}
         ::-webkit-scrollbar-track-piece {background: #f1f1f1;}
         ::-webkit-scrollbar-corner {background: transparent;}
+                /* Fade-in effect */
+                body {
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+        body.fade-in {
+            opacity: 1;
+        }
     </style>
 </head>
 <body>
@@ -93,7 +100,7 @@ ob_end_flush(); // Flush output buffer
                     <form action="" method="POST">
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            <input type="email" class="form-control" id="email" name="email" required autocomplete="off">
                         </div>
                         <label for="password" class="form-label">Password</label>
                         <div class="mb-3 password-container">
@@ -171,9 +178,14 @@ ob_end_flush(); // Flush output buffer
             </div>
         </div>
     </div>
-
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        setTimeout(() => {
+            document.body.classList.add("fade-in"); // Smooth fade-in on page load
+        }, 10); // Small delay ensures consistency
+    });
+    </script>
     <script>
         document.getElementById("togglePassword").addEventListener("click", function() {
             const passwordField = document.getElementById("password");
