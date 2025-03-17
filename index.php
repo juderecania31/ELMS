@@ -1,4 +1,6 @@
 <?php
+    ob_start(); // Start output buffering
+
     session_start();
     require 'db.php'; // Include database connection
     include 'includes/fade_in.php';
@@ -212,3 +214,7 @@
     </script>
 </body>
 </html>
+
+<?php
+    ob_end_flush(); // Flush the output buffer and send content to the browser
+?>
