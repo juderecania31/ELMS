@@ -41,6 +41,7 @@
         }
     }
     // include 'includes/fade_in.php';
+    ob_end_flush(); // Flush output buffer
     ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -213,7 +214,3 @@
     </script>
 </body>
 </html>
-
-<?php
-    ob_end_flush(); // Flush the output buffer and send content to the browser
-?>
