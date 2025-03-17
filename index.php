@@ -1,48 +1,43 @@
 <?php
-    ob_start(); // Start output buffering
-
-    session_start();
-    require 'db.php'; // Include database connection
-    
-    // Handle login form submission
-    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $email = trim($_POST['email']);
-        $password = trim($_POST['password']);
-        
-        if (!empty($email) && !empty($password)) {
-            try {
-                // Prepare SQL statement
-                $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
-                $stmt->bindParam(':email', $email, PDO::PARAM_STR);
-                $stmt->execute();
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                
-                if ($user && password_verify($password, $user['password'])) {
-                    // Store user session
-                    $_SESSION['email'] = $user['email'];
-                    $_SESSION['role'] = $user['role']; // Store user role in session
-                    $_SESSION['user_id'] = $user['user_id']; // Store user ID (optional)
-                    
-                    // Redirect based on role
-                    if ($user['role'] == 'Admin') {
-                        header("Location: admin/dashboard.php");
-                    } else {
-                        header("Location: employee/dashboard.php");
-                    }
-                    exit();
+ob_start(); // Start output buffering
+session_start();
+require 'db.php'; // Include database connection
+// Handle login form submission
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+    if (!empty($email) && !empty($password)) {
+        try {
+            // Prepare SQL statement
+            $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
+            $stmt->bindParam(':email', $email, PDO::PARAM_STR);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($user && password_verify($password, $user['password'])) {
+                // Store user session
+                $_SESSION['email'] = $user['email'];
+                $_SESSION['role'] = $user['role']; // Store user role in session
+                $_SESSION['user_id'] = $user['user_id']; // Store user ID (optional)
+                // Redirect based on role
+                if ($user['role'] == 'Admin') {
+                    header("Location: admin/dashboard.php");
                 } else {
-                    $_SESSION['error'] = "Invalid email or password.";
+                    header("Location: employee/dashboard.php");
                 }
-            } catch (PDOException $e) {
-                die("Database error: " . $e->getMessage());
+                exit();
+            } else {
+                $_SESSION['error'] = "Invalid email or password.";
             }
-        } else {
-            $_SESSION['error'] = "Please fill in all fields.";
+        } catch (PDOException $e) {
+            die("Database error: " . $e->getMessage());
         }
+    } else {
+        $_SESSION['error'] = "Please fill in all fields.";
     }
-    // include 'includes/fade_in.php';
-    ob_end_flush(); // Flush output buffer
-    ?>
+}
+// include 'includes/fade_in.php';
+ob_end_flush(); // Flush output buffer
+?>
 <!DOCTYPE html>
 <html lang="en">
     <head>

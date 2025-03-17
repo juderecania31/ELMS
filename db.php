@@ -1,5 +1,4 @@
 <?php
-
 $host = "localhost";
 $dbname = "elmsv2";
 $username = "root";
@@ -17,5 +16,4 @@ try {
     error_log("Database connection error: " . $e->getMessage());
     die("Database connection failed. Please try again later.");
 }
-
 ?>
