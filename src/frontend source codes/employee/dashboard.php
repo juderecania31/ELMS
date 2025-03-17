@@ -1,8 +1,8 @@
-<?php
-ob_start();
+<?php 
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
+
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Employee') {
         header("Location: ../index.php");
         exit();
@@ -11,61 +11,74 @@ ob_start();
     $page_title = "Home";
     include '../includes/navbar.php';
     include '../includes/fade_in.php';
+
     // Get logged-in user's ID
     $user_id = $_SESSION['user_id'];
+
     try {
         // Fetch user data, leave balance, and salary in one query
         $stmt = $pdo->prepare("SELECT first_name, last_name, email, leave_balance, salary FROM users WHERE user_id = ?");
         $stmt->execute([$user_id]);
         $employee = $stmt->fetch(PDO::FETCH_ASSOC) ?? ['first_name' => 'Unknown', 'last_name' => '', 'email' => 'N/A', 'leave_balance' => 0, 'salary' => 'N/A'];
+    
         $total_leaves = $employee['leave_balance'];
         $salary = $employee['salary'];
     } catch (PDOException $e) {
         die("Database error: " . $e->getMessage());
     }
+    
+    
     try {
         $stmt = $pdo->prepare("SELECT id, date, morning_time_in, morning_time_out, afternoon_time_in, afternoon_time_out, total_hours 
                                FROM attendance WHERE user_id = ? ORDER BY date DESC");
         $stmt->execute([$user_id]);
         $attendance_records = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
         foreach ($attendance_records as &$record) {
             $morning_seconds = 0;
             $afternoon_seconds = 0;
+        
             // Morning time calculation
             if (!empty($record['morning_time_in']) || !empty($record['morning_time_out'])) {
                 $morning_in = $record['morning_time_in'] ? strtotime($record['morning_time_in']) : null;
                 $morning_out = $record['morning_time_out'] ? strtotime($record['morning_time_out']) : null;
+        
                 if ($morning_in !== false && $morning_out !== false && $morning_out > $morning_in) {
                     $morning_seconds = $morning_out - $morning_in;
                 }
             }
+        
             // Afternoon time calculation
             if (!empty($record['afternoon_time_in']) || !empty($record['afternoon_time_out'])) {
                 $afternoon_in = $record['afternoon_time_in'] ? strtotime($record['afternoon_time_in']) : null;
                 $afternoon_out = $record['afternoon_time_out'] ? strtotime($record['afternoon_time_out']) : null;
+        
                 if ($afternoon_in !== false && $afternoon_out !== false && $afternoon_out > $afternoon_in) {
                     $afternoon_seconds = $afternoon_out - $afternoon_in;
                 }
             }
+        
             // Total seconds calculation
             $total_seconds = $morning_seconds + $afternoon_seconds;
+        
             // Convert to HH:MM:SS format
             $hours = floor($total_seconds / 3600);
             $minutes = floor(($total_seconds % 3600) / 60);
             $seconds = $total_seconds % 60;
             $formatted_total_hours = sprintf("%02d:%02d:%02d", $hours, $minutes, $seconds);
+        
             // Update total_hours in the database
             if (trim((string) $record['total_hours']) !== trim((string) $formatted_total_hours)) {
                 $update_stmt = $pdo->prepare("UPDATE attendance SET total_hours = ? WHERE id = ?");
                 $update_stmt->execute([$formatted_total_hours, $record['id']]);
             }
+        
             // Store formatted total hours for display
             $record['formatted_total_hours'] = $formatted_total_hours;
-        }
+        }        
     } catch (PDOException $e) {
         die("Database error: " . $e->getMessage());
-    }
-ob_end_flush();  
+    }    
 ?>
 
 <!DOCTYPE html>

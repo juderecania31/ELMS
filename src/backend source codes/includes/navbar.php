@@ -1,5 +1,4 @@
 <?php
-ob_start(); // Start output buffering
     // Start session only if not already started
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
@@ -30,7 +29,9 @@ ob_start(); // Start output buffering
     // Define base path dynamically
     $basePath = ($role === 'Admin') ? "/elmsv2/admin/" : "/elmsv2/employee/";
     $dashboard_link = $protocol . $host . $basePath . 'dashboard.php';
-ob_end_flush(); // Flush output buffer
+
+    // Ensure no output before headers are sent
+    ob_start(); // Start output buffering
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -1,49 +1,55 @@
 <?php
-ob_start();
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
-if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
-    header("Location: ../index.php");
-    exit();
-}
-require_once '../db.php';
-$page_title = "Home";
-include '../includes/navbar.php';
-include '../includes/fade_in.php';
-// Fetch employee count
-$stmt = $pdo->query("SELECT COUNT(*) as count FROM users WHERE role = 'Employee'");
-$employee_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
-// Fetch department count
-$stmt = $pdo->query("SELECT COUNT(*) as count FROM departments");
-$department_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
-// Fetch count of employees on leave today
-$stmt = $pdo->prepare("SELECT COUNT(*) as count FROM leave_request WHERE start_date <= CURDATE() AND end_date >= CURDATE() AND status = 'approved'");
-$stmt->execute();
-$on_leave_today_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
-// Fetch today's attendance records with employee details
-// Fetch today's attendance records with employee details
-$stmt = $pdo->prepare("SELECT
-                        u.first_name, 
-                        u.last_name, 
-                        a.morning_time_in, 
-                        a.morning_time_out, 
-                        a.afternoon_time_in, 
-                        a.afternoon_time_out,
-                        TIMEDIFF(IFNULL(a.morning_time_out, '00:00:00'), IFNULL(a.morning_time_in, '00:00:00')) AS morning_hours,
-                        TIMEDIFF(IFNULL(a.afternoon_time_out, '00:00:00'), IFNULL(a.afternoon_time_in, '00:00:00')) AS afternoon_hours,
-                        SEC_TO_TIME(
-                            IFNULL(TIME_TO_SEC(TIMEDIFF(a.morning_time_out, a.morning_time_in)), 0) + 
-                            IFNULL(TIME_TO_SEC(TIMEDIFF(a.afternoon_time_out, a.afternoon_time_in)), 0)
-                        ) AS total_hours
-                    FROM attendance a
-                    JOIN users u ON a.user_id = u.user_id
-                    WHERE DATE(a.date) = CURDATE()
-                    ");
-$stmt->execute();
-$records = $stmt->fetchAll(PDO::FETCH_ASSOC);
-ob_end_flush();
+    if (session_status() == PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'Admin') {
+        header("Location: ../index.php");
+        exit();
+    }
+
+    require_once '../db.php';
+    $page_title = "Home";
+    include '../includes/navbar.php';
+    include '../includes/fade_in.php';
+
+    // Fetch employee count
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM users WHERE role = 'Employee'");
+    $employee_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    // Fetch department count
+    $stmt = $pdo->query("SELECT COUNT(*) as count FROM departments");
+    $department_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    // Fetch count of employees on leave today
+    $stmt = $pdo->prepare("SELECT COUNT(*) as count FROM leave_request WHERE start_date <= CURDATE() AND end_date >= CURDATE() AND status = 'approved'");
+    $stmt->execute();
+    $on_leave_today_count = $stmt->fetch(PDO::FETCH_ASSOC)['count'];
+
+    // Fetch today's attendance records with employee details
+    // Fetch today's attendance records with employee details
+    $stmt = $pdo->prepare("SELECT
+                            u.first_name, 
+                            u.last_name, 
+                            a.morning_time_in, 
+                            a.morning_time_out, 
+                            a.afternoon_time_in, 
+                            a.afternoon_time_out,
+                            TIMEDIFF(IFNULL(a.morning_time_out, '00:00:00'), IFNULL(a.morning_time_in, '00:00:00')) AS morning_hours,
+                            TIMEDIFF(IFNULL(a.afternoon_time_out, '00:00:00'), IFNULL(a.afternoon_time_in, '00:00:00')) AS afternoon_hours,
+                            SEC_TO_TIME(
+                                IFNULL(TIME_TO_SEC(TIMEDIFF(a.morning_time_out, a.morning_time_in)), 0) + 
+                                IFNULL(TIME_TO_SEC(TIMEDIFF(a.afternoon_time_out, a.afternoon_time_in)), 0)
+                            ) AS total_hours
+                        FROM attendance a
+                        JOIN users u ON a.user_id = u.user_id
+                        WHERE DATE(a.date) = CURDATE()
+                        ");
+
+    $stmt->execute();
+    $records = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
